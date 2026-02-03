@@ -5,22 +5,20 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PlayersService {
-  constructor(private configService: ConfigService) {}
+  private readonly apiKey: string;
+  private readonly baseUrl: string;
 
-  getApiKey() {
-    return this.configService.get<string>('API_KEY');
-  }
-
-  getBaseUrl() {
-    return this.configService.get<string>('BASE_URL');
+  constructor(private configService: ConfigService) {
+    this.apiKey = this.configService.getOrThrow<string>('API_KEY');
+    this.baseUrl = this.configService.getOrThrow<string>('BASE_URL');
   }
 
   async getPlayers(): Promise<Player[]> {
     const response = await axios.get<{ data: Player[] }>(
-      `${this.getBaseUrl()}/players`,
+      `${this.baseUrl}/players`,
       {
         headers: {
-          Authorization: this.getApiKey(),
+          Authorization: this.apiKey,
         },
       },
     );
