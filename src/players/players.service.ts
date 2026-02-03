@@ -1,16 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import { Player } from './interfaces/player.interface';
 import { ConfigService } from '@nestjs/config';
+import { InjectModel } from '@nestjs/mongoose';
+import { Player } from './schemas/players.schema';
+import { Model } from 'mongoose';
+import { CreatePlayerDto } from './dto/CreatePlayer.dto';
 
 @Injectable()
 export class PlayersService {
   private readonly apiKey: string;
   private readonly baseUrl: string;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    @InjectModel(Player.name) private playerModel: Model<Player>,
+  ) {
     this.apiKey = this.configService.getOrThrow<string>('API_KEY');
     this.baseUrl = this.configService.getOrThrow<string>('BASE_URL');
+  }
+
+  async create(createPlayerDto: CreatePlayerDto): Promise<Player> {
+    const createdPlayer = await this.playerModel.create(createPlayerDto);
+    return createdPlayer;
   }
 
   async getPlayers(): Promise<Player[]> {

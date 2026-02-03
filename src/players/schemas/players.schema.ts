@@ -6,40 +6,40 @@ export type PlayerDocument = HydratedDocument<Player>;
 
 @Schema()
 export class Player {
-  @Prop()
+  @Prop({ required: true })
   id: number;
 
-  @Prop()
+  @Prop({ required: true })
   first_name: string;
 
-  @Prop()
+  @Prop({ required: true })
   last_name: string;
 
-  @Prop()
+  @Prop({ required: true })
   position: string;
 
-  @Prop()
+  @Prop({ required: true })
   height: string;
 
-  @Prop()
+  @Prop({ required: true })
   weight: string;
 
-  @Prop()
+  @Prop({ required: true })
   jersey_number: string;
 
-  @Prop()
+  @Prop({ required: true })
   college: string;
 
-  @Prop()
+  @Prop({ required: true })
   country: string;
 
-  @Prop()
+  @Prop({ required: true })
   draft_year: number;
 
-  @Prop()
+  @Prop({ required: true })
   draft_round: number;
 
-  @Prop()
+  @Prop({ required: true })
   draft_number: number;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Team' })
