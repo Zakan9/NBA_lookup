@@ -1,4 +1,14 @@
-export class CreatePlayerDto {
+export interface ITeam {
+  id: number;
+  conference: string;
+  division: string;
+  city: string;
+  name: string;
+  full_name: string;
+  abbreviation: string;
+}
+
+export interface IPlayer {
   id: number;
 
   first_name: string;
@@ -23,13 +33,5 @@ export class CreatePlayerDto {
 
   draft_number: number;
 
-  team: {
-    id: number;
-    conference: string;
-    division: string;
-    city: string;
-    name: string;
-    full_name: string;
-    abbreviation: string;
-  };
+  team: ITeam;
 }

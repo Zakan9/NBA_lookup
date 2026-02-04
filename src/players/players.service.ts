@@ -4,7 +4,9 @@ import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Player } from './schemas/players.schema';
 import { Model } from 'mongoose';
-import { CreatePlayerDto } from './dto/CreatePlayer.dto';
+import { CreatePlayerDto } from './dto/create-player.dto';
+import { UpdatePlayerDto } from './dto/update-player.dto';
+import { IPlayer } from './interfaces/player.interface';
 
 @Injectable()
 export class PlayersService {
@@ -19,13 +21,23 @@ export class PlayersService {
     this.baseUrl = this.configService.getOrThrow<string>('BASE_URL');
   }
 
-  async create(createPlayerDto: CreatePlayerDto): Promise<Player> {
+  async createPlayer(createPlayerDto: CreatePlayerDto): Promise<Player> {
     const createdPlayer = await this.playerModel.create(createPlayerDto);
     return createdPlayer;
   }
 
-  async getPlayers(): Promise<Player[]> {
-    const response = await axios.get<{ data: Player[] }>(
+  async deletePlayer(id: string): Promise<void> {
+    await this.playerModel.findOneAndDelete({ _id: id });
+  }
+
+  async updatePlayer(updatePlayerDto: UpdatePlayerDto, id: string) {
+    return this.playerModel.findOneAndUpdate({ _id: id }, updatePlayerDto, {
+      new: true,
+    });
+  }
+
+  async getPlayers(): Promise<IPlayer[]> {
+    const response = await axios.get<{ data: IPlayer[] }>(
       `${this.baseUrl}/players`,
       {
         headers: {

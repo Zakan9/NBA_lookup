@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
-import { Team } from './team.schema';
+import { HydratedDocument } from 'mongoose';
 
 export type PlayerDocument = HydratedDocument<Player>;
 
@@ -15,35 +14,32 @@ export class Player {
   @Prop({ required: true })
   last_name: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   position: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   height: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   weight: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   jersey_number: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   college: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   country: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   draft_year: number;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   draft_round: number;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   draft_number: number;
-
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Team' })
-  team: Team;
 }
 
 export const PlayerSchema = SchemaFactory.createForClass(Player);
