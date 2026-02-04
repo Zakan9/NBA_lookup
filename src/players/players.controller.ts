@@ -33,12 +33,12 @@ export class PlayersController {
 
   @Patch('/:id')
   async updatePlayer(
-    @Body() updatePlayerDto: UpdatePlayerDto,
     @Param('id') id: string,
+    @Body() updatePlayerDto: UpdatePlayerDto,
   ) {
     const updatedPlayer = await this.playersService.updatePlayer(
-      updatePlayerDto,
       id,
+      updatePlayerDto,
     );
     if (!updatedPlayer) {
       throw new NotFoundException('Player not found');

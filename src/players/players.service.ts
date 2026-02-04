@@ -30,7 +30,7 @@ export class PlayersService {
     await this.playerModel.findOneAndDelete({ _id: id });
   }
 
-  async updatePlayer(updatePlayerDto: UpdatePlayerDto, id: string) {
+  async updatePlayer(id: string, updatePlayerDto: UpdatePlayerDto) {
     return this.playerModel.findOneAndUpdate({ _id: id }, updatePlayerDto, {
       new: true,
     });
