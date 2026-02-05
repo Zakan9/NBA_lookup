@@ -7,6 +7,7 @@ import { Model } from 'mongoose';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { IPlayer } from './interfaces/player.interface';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class PlayersService {
@@ -30,10 +31,22 @@ export class PlayersService {
     await this.playerModel.findOneAndDelete({ _id: id });
   }
 
+  async deleteAllPlayers(): Promise<void> {
+    await this.playerModel.deleteMany({});
+  }
+
   async updatePlayer(id: string, updatePlayerDto: UpdatePlayerDto) {
     return this.playerModel.findOneAndUpdate({ _id: id }, updatePlayerDto, {
       new: true,
     });
+  }
+
+  async upsertPlayerByExternalId(player: IPlayer): Promise<void> {
+    await this.playerModel.updateOne(
+      { externalId: player.id },
+      { $set: player },
+      { upsert: true },
+    );
   }
 
   async getPlayers(): Promise<IPlayer[]> {
@@ -46,6 +59,16 @@ export class PlayersService {
       },
     );
 
-    return response.data.data;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return response.data.data.map(({ team, ...rest }) => rest);
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async playersToDataBase(): Promise<void> {
+    const players = await this.getPlayers();
+
+    for (const player of players) {
+      await this.upsertPlayerByExternalId(player);
+    }
   }
 }

@@ -31,6 +31,11 @@ export class PlayersController {
     await this.playersService.deletePlayer(id);
   }
 
+  @Delete()
+  async deleteAllPlayers() {
+    await this.playersService.deleteAllPlayers();
+  }
+
   @Patch('/:id')
   async updatePlayer(
     @Param('id') id: string,
