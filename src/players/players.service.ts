@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
@@ -13,6 +13,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 export class PlayersService {
   private readonly apiKey: string;
   private readonly baseUrl: string;
+  private readonly logger = new Logger(PlayersService.name);
 
   constructor(
     private configService: ConfigService,
@@ -41,10 +42,24 @@ export class PlayersService {
     });
   }
 
-  async upsertPlayerByExternalId(player: IPlayer): Promise<void> {
+  async upsertExternalPlayer(player: IPlayer): Promise<void> {
+    const mappedPlayer = {
+      externalId: player.id,
+      last_name: player.last_name,
+      position: player.position,
+      height: player.height,
+      weight: player.weight,
+      jersey_number: player.jersey_number,
+      college: player.college,
+      country: player.country,
+      draft_year: player.draft_year,
+      draft_round: player.draft_round,
+      draft_number: player.draft_number,
+    };
+
     await this.playerModel.updateOne(
       { externalId: player.id },
-      { $set: player },
+      { $set: mappedPlayer },
       { upsert: true },
     );
   }
@@ -64,11 +79,22 @@ export class PlayersService {
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async playersToDataBase(): Promise<void> {
-    const players = await this.getPlayers();
+  async upsertPlayersToDatabase(): Promise<void> {
+    this.logger.log('Cron job starting (upsertPlayersToDatabase)');
+    try {
+      const players = await this.getPlayers();
 
-    for (const player of players) {
-      await this.upsertPlayerByExternalId(player);
+      this.logger.log(`Fetched ${players.length} players from API`);
+
+      for (const player of players) {
+        await this.upsertExternalPlayer(player);
+      }
+
+      this.logger.log('Cron job finished successfully');
+    } catch (error) {
+      this.logger.error(
+        `Cron job failed (upsertPlayersToDatabase).\nError: ${error}`,
+      );
     }
   }
 }

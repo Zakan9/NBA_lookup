@@ -5,7 +5,7 @@ export type PlayerDocument = HydratedDocument<Player>;
 
 @Schema()
 export class Player {
-  @Prop({ required: true })
+  @Prop({ required: false })
   externalId: number;
 
   @Prop({ required: true })
