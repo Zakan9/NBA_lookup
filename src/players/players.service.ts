@@ -73,7 +73,7 @@ export class PlayersService {
   ): Promise<Player[]> {
     const playersFromDatabase = await this.playerModel
       .find({})
-      .skip(paginationDto.skip)
+      .skip(paginationDto.skip ?? 0)
       .limit(paginationDto.limit ?? DEFAULT_PAGE_SIZE)
       .exec();
     return playersFromDatabase;
