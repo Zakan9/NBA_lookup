@@ -9,6 +9,8 @@ import { UpdatePlayerDto } from './dto/update-player.dto';
 import { IPlayer } from './interfaces/player.interface';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PlayersResponse } from './interfaces/players-response.interface';
+import { PaginationDto } from './dto/pagination.dto';
+import { DEFAULT_PAGE_SIZE } from 'src/utils/constants.utils';
 
 @Injectable()
 export class PlayersService {
@@ -46,6 +48,7 @@ export class PlayersService {
   async upsertExternalPlayer(player: IPlayer): Promise<void> {
     const mappedPlayer = {
       externalId: player.id,
+      first_name: player.first_name,
       last_name: player.last_name,
       position: player.position,
       height: player.height,
@@ -65,7 +68,18 @@ export class PlayersService {
     );
   }
 
-  async getPlayers(): Promise<IPlayer[]> {
+  async getPlayersFromDatabase(
+    paginationDto: PaginationDto,
+  ): Promise<Player[]> {
+    const playersFromDatabase = await this.playerModel
+      .find({})
+      .skip(paginationDto.skip)
+      .limit(paginationDto.limit ?? DEFAULT_PAGE_SIZE)
+      .exec();
+    return playersFromDatabase;
+  }
+
+  async getPlayersFromApi(): Promise<IPlayer[]> {
     let nextCursor: number | null = null;
     const allPlayers: IPlayer[] = [];
 
@@ -112,8 +126,7 @@ export class PlayersService {
   async upsertPlayersToDatabase(): Promise<void> {
     this.logger.log('Cron job starting (upsertPlayersToDatabase)');
     try {
-      const players = await this.getPlayers();
-
+      const players = await this.getPlayersFromApi();
       this.logger.log(`Fetched ${players.length} players from API`);
 
       for (const player of players) {

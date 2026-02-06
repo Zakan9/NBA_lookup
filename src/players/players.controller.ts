@@ -7,18 +7,25 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { PlayersService } from './players.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Controller('players')
 export class PlayersController {
   constructor(private readonly playersService: PlayersService) {}
 
-  @Get()
-  async getPlayers() {
-    return this.playersService.getPlayers();
+  @Get('/database')
+  async getPlayersFromDatabase(@Query() paginationDto: PaginationDto) {
+    return this.playersService.getPlayersFromDatabase(paginationDto);
+  }
+
+  @Get('/api')
+  async getPlayersFromApi() {
+    return this.playersService.getPlayersFromApi();
   }
 
   @Post()
