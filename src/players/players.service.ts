@@ -68,14 +68,13 @@ export class PlayersService {
   async getPlayers(): Promise<IPlayer[]> {
     let nextCursor: number | null = null;
     const allPlayers: IPlayer[] = [];
-    let IsFirstTimeRunningLoop: boolean = true;
 
     do {
       try {
         const response = await axios.get<PlayersResponse>(
-          IsFirstTimeRunningLoop
-            ? `${this.baseUrl}/players?per_page=100`
-            : `${this.baseUrl}/players?per_page=100&cursor=${nextCursor}`,
+          nextCursor !== null
+            ? `${this.baseUrl}/players?per_page=100&cursor=${nextCursor}`
+            : `${this.baseUrl}/players?per_page=100`,
           {
             headers: {
               Authorization: this.apiKey,
@@ -89,10 +88,10 @@ export class PlayersService {
         allPlayers.push(...players);
 
         nextCursor = data.meta.next_cursor;
-        IsFirstTimeRunningLoop = false;
+        if (typeof nextCursor !== 'number' || isNaN(nextCursor)) {
+          nextCursor = null;
+        }
 
-        console.log('---------------------Asked----------------------');
-        console.log(players);
         if (nextCursor !== null) {
           await new Promise((resolve) => setTimeout(resolve, 1000));
         }
@@ -101,11 +100,8 @@ export class PlayersService {
           console.log(`Rate limited. Waiting 60 seconds...`);
           await new Promise((resolve) => setTimeout(resolve, 60000));
           continue;
-        } else {
-          console.log(`Error (${error}). Waiting 60 seconds...`);
-          await new Promise((resolve) => setTimeout(resolve, 60000));
-          return allPlayers; // next_cursor pasiekia int limit'a ir visko neiseina nuskaityt
         }
+        throw error;
       }
     } while (nextCursor !== null);
 
