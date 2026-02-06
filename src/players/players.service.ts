@@ -8,6 +8,7 @@ import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { IPlayer } from './interfaces/player.interface';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { PlayersResponse } from './interfaces/players-response.interface';
 
 @Injectable()
 export class PlayersService {
@@ -65,17 +66,50 @@ export class PlayersService {
   }
 
   async getPlayers(): Promise<IPlayer[]> {
-    const response = await axios.get<{ data: IPlayer[] }>(
-      `${this.baseUrl}/players`,
-      {
-        headers: {
-          Authorization: this.apiKey,
-        },
-      },
-    );
+    let nextCursor: number | null = null;
+    const allPlayers: IPlayer[] = [];
+    let IsFirstTimeRunningLoop: boolean = true;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return response.data.data.map(({ team, ...rest }) => rest);
+    do {
+      try {
+        const response = await axios.get<PlayersResponse>(
+          IsFirstTimeRunningLoop
+            ? `${this.baseUrl}/players?per_page=100`
+            : `${this.baseUrl}/players?per_page=100&cursor=${nextCursor}`,
+          {
+            headers: {
+              Authorization: this.apiKey,
+            },
+          },
+        );
+        const data: PlayersResponse = response.data;
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const players = response.data.data.map(({ team, ...rest }) => rest);
+        allPlayers.push(...players);
+
+        nextCursor = data.meta.next_cursor;
+        IsFirstTimeRunningLoop = false;
+
+        console.log('---------------------Asked----------------------');
+        console.log(players);
+        if (nextCursor !== null) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 429) {
+          console.log(`Rate limited. Waiting 60 seconds...`);
+          await new Promise((resolve) => setTimeout(resolve, 60000));
+          continue;
+        } else {
+          console.log(`Error (${error}). Waiting 60 seconds...`);
+          await new Promise((resolve) => setTimeout(resolve, 60000));
+          return allPlayers; // next_cursor pasiekia int limit'a ir visko neiseina nuskaityt
+        }
+      }
+    } while (nextCursor !== null);
+
+    return allPlayers;
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
