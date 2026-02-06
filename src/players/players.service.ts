@@ -3,14 +3,15 @@ import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Player } from './schemas/players.schema';
-import { Model } from 'mongoose';
+import { Model, QueryFilter } from 'mongoose';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { IPlayer } from './interfaces/player.interface';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { PlayersResponse } from './interfaces/players-response.interface';
+import { IPlayersResponse } from './interfaces/players-response.interface';
 import { PaginationDto } from './dto/pagination.dto';
 import { DEFAULT_PAGE_SIZE } from 'src/utils/constants.utils';
+import { PlayersFilterDto } from './dto/players-filter.dto';
 
 @Injectable()
 export class PlayersService {
@@ -70,10 +71,38 @@ export class PlayersService {
 
   async getPlayersFromDatabase(
     paginationDto: PaginationDto,
+    filters: PlayersFilterDto,
   ): Promise<Player[]> {
+    const query: QueryFilter<Player> = {};
+
+    if (filters.first_name) {
+      query.first_name = { $regex: filters.first_name, $options: 'i' };
+    }
+
+    if (filters.last_name) {
+      query.last_name = { $regex: filters.last_name, $options: 'i' };
+    }
+
+    if (filters.country) {
+      query.country = filters.country;
+    }
+
+    if (filters.position) {
+      query.position = filters.position;
+    }
+
+    if (filters.draft_number !== undefined) {
+      query.draft_number = filters.draft_number;
+    }
+
+    const limit = paginationDto.limit ?? DEFAULT_PAGE_SIZE;
+    const page = paginationDto.page ?? 1;
+
+    const skip = (page - 1) * limit;
+
     const playersFromDatabase = await this.playerModel
-      .find({})
-      .skip(paginationDto.skip ?? 0)
+      .find(query)
+      .skip(skip)
       .limit(paginationDto.limit ?? DEFAULT_PAGE_SIZE)
       .exec();
     return playersFromDatabase;
@@ -85,7 +114,7 @@ export class PlayersService {
 
     do {
       try {
-        const response = await axios.get<PlayersResponse>(
+        const response = await axios.get<IPlayersResponse>(
           nextCursor !== null
             ? `${this.baseUrl}/players?per_page=100&cursor=${nextCursor}`
             : `${this.baseUrl}/players?per_page=100`,
@@ -95,7 +124,7 @@ export class PlayersService {
             },
           },
         );
-        const data: PlayersResponse = response.data;
+        const data: IPlayersResponse = response.data;
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const players = response.data.data.map(({ team, ...rest }) => rest);

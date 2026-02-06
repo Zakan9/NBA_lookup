@@ -1,6 +1,6 @@
 import { IPlayer } from './player.interface';
 
-export interface PlayersResponse {
+export interface IPlayersResponse {
   data: IPlayer[];
   meta: {
     next_cursor: number | null;

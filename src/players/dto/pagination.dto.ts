@@ -1,14 +1,13 @@
-import { Optional } from '@nestjs/common';
-import { IsNumber, IsPositive } from 'class-validator';
+import { IsNumber, IsPositive, IsOptional } from 'class-validator';
 
 export class PaginationDto {
   @IsNumber()
   @IsPositive()
-  @Optional()
-  skip: number;
+  @IsOptional()
+  page: number;
 
   @IsNumber()
   @IsPositive()
-  @Optional()
+  @IsOptional()
   limit: number;
 }

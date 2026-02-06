@@ -13,14 +13,21 @@ import { PlayersService } from './players.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { PaginationDto } from './dto/pagination.dto';
+import { PlayersFilterDto } from './dto/players-filter.dto';
 
 @Controller('players')
 export class PlayersController {
   constructor(private readonly playersService: PlayersService) {}
 
   @Get('/database')
-  async getPlayersFromDatabase(@Query() paginationDto: PaginationDto) {
-    return this.playersService.getPlayersFromDatabase(paginationDto);
+  async getPlayersFromDatabase(
+    @Query() paginationDto: PaginationDto,
+    @Query() playersFilterDto: PlayersFilterDto,
+  ) {
+    return this.playersService.getPlayersFromDatabase(
+      paginationDto,
+      playersFilterDto,
+    );
   }
 
   @Get('/api')
