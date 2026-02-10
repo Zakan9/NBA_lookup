@@ -14,14 +14,14 @@ export class Player {
   @Prop({ required: true })
   last_name!: string;
 
-  @Prop({ required: false })
-  position?: string;
+  @Prop({ type: [String], required: false })
+  position?: ('G' | 'F' | 'C')[];
 
   @Prop({ required: false })
-  height?: string;
+  height?: number;
 
   @Prop({ required: false })
-  weight?: string;
+  weight?: number;
 
   @Prop({ required: false })
   jersey_number?: string;

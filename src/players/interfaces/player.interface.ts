@@ -15,11 +15,11 @@ export interface IPlayer {
 
   last_name: string;
 
-  position: string;
+  position: string[];
 
-  height: string;
+  height: number | null;
 
-  weight: string;
+  weight: number | null;
 
   jersey_number: string;
 

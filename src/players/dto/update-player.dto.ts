@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdatePlayerDto {
   @IsOptional()
@@ -10,16 +10,16 @@ export class UpdatePlayerDto {
   last_name?: string;
 
   @IsOptional()
-  @IsString()
-  position?: string;
+  @IsEnum(['G', 'F', 'C'], { each: true })
+  position?: ('G' | 'F' | 'C')[];
 
   @IsOptional()
   @IsString()
-  height?: string;
+  height?: number;
 
   @IsOptional()
   @IsString()
-  weight?: string;
+  weight?: number;
 
   @IsOptional()
   @IsString()

@@ -94,6 +94,28 @@ export class PlayersService {
       query.draft_number = playersFilterDto.draft_number;
     }
 
+    if (
+      playersFilterDto.min_height !== undefined ||
+      playersFilterDto.max_height !== undefined
+    ) {
+      query.height = {};
+      if (playersFilterDto.min_height !== undefined)
+        query.height.$gte = playersFilterDto.min_height;
+      if (playersFilterDto.max_height !== undefined)
+        query.height.$lte = playersFilterDto.max_height;
+    }
+
+    if (
+      playersFilterDto.min_weight !== undefined ||
+      playersFilterDto.max_weight !== undefined
+    ) {
+      query.weight = {};
+      if (playersFilterDto.min_weight !== undefined)
+        query.weight.$gte = playersFilterDto.min_weight;
+      if (playersFilterDto.max_weight !== undefined)
+        query.weight.$lte = playersFilterDto.max_weight;
+    }
+
     const limit = playersFilterDto.limit ?? DEFAULT_PAGE_SIZE;
     const page = playersFilterDto.page ?? 1;
 
@@ -125,20 +147,55 @@ export class PlayersService {
         );
         const data: IPlayersResponse = response.data;
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const players = response.data.data.map(({ team, country, ...rest }) => {
-          let countryValue = '';
+        const players = response.data.data.map(
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          ({ team, country, weight, height, position, ...rest }) => {
+            let countryValue = '';
+            let tempPosition: string[] = [];
+            let tempWeight: number | null = null;
+            let tempHeight: number | null = null;
 
-          if (country) {
-            const countryData = getByCountry(country);
-            countryValue = countryData?.code || country;
-          }
+            if (country !== '') {
+              const countryData = getByCountry(country);
+              countryValue = countryData?.code || country;
+            }
 
-          return {
-            ...rest,
-            country: countryValue,
-          };
-        });
+            if (position !== '') {
+              if (position.length > 1) {
+                const parts = position.split('-');
+                tempPosition = parts;
+              } else {
+                tempPosition[0] = position[0];
+              }
+            }
+
+            if (typeof weight === 'string') {
+              const parsed = parseInt(weight, 10);
+              if (!Number.isNaN(parsed)) {
+                // Convert to kg
+                tempWeight = Math.round(parsed * 0.45);
+              }
+            }
+
+            if (typeof height === 'string') {
+              const parts = height.split('-');
+              if (!Number.isNaN(parts[0]) && !Number.isNaN(parts[1])) {
+                // Convert to cm
+                tempHeight = Math.round(
+                  parseInt(parts[0]) * 30.48 + parseInt(parts[1]) * 2.54,
+                );
+              }
+            }
+
+            return {
+              ...rest,
+              country: countryValue,
+              weight: tempWeight,
+              height: tempHeight,
+              position: tempPosition,
+            };
+          },
+        );
 
         console.log(players);
         allPlayers.push(...players);
