@@ -9,9 +9,9 @@ import { UpdatePlayerDto } from './dto/update-player.dto';
 import { IPlayer } from './interfaces/player.interface';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { IPlayersResponse } from './interfaces/players-response.interface';
-import { PaginationDto } from './dto/pagination.dto';
 import { DEFAULT_PAGE_SIZE } from 'src/utils/constants.utils';
 import { PlayersFilterDto } from './dto/players-filter.dto';
+import { getByCountry } from 'countries-ts';
 
 @Injectable()
 export class PlayersService {
@@ -70,40 +70,39 @@ export class PlayersService {
   }
 
   async getPlayersFromDatabase(
-    paginationDto: PaginationDto,
-    filters: PlayersFilterDto,
+    playersFilterDto: PlayersFilterDto,
   ): Promise<Player[]> {
     const query: QueryFilter<Player> = {};
 
-    if (filters.first_name) {
-      query.first_name = { $regex: filters.first_name, $options: 'i' };
+    if (playersFilterDto.first_name) {
+      query.first_name = { $regex: playersFilterDto.first_name, $options: 'i' };
     }
 
-    if (filters.last_name) {
-      query.last_name = { $regex: filters.last_name, $options: 'i' };
+    if (playersFilterDto.last_name) {
+      query.last_name = { $regex: playersFilterDto.last_name, $options: 'i' };
     }
 
-    if (filters.country) {
-      query.country = filters.country;
+    if (playersFilterDto.country) {
+      query.country = playersFilterDto.country;
     }
 
-    if (filters.position) {
-      query.position = filters.position;
+    if (playersFilterDto.position) {
+      query.position = playersFilterDto.position;
     }
 
-    if (filters.draft_number !== undefined) {
-      query.draft_number = filters.draft_number;
+    if (playersFilterDto.draft_number !== undefined) {
+      query.draft_number = playersFilterDto.draft_number;
     }
 
-    const limit = paginationDto.limit ?? DEFAULT_PAGE_SIZE;
-    const page = paginationDto.page ?? 1;
+    const limit = playersFilterDto.limit ?? DEFAULT_PAGE_SIZE;
+    const page = playersFilterDto.page ?? 1;
 
     const skip = (page - 1) * limit;
 
     const playersFromDatabase = await this.playerModel
       .find(query)
       .skip(skip)
-      .limit(paginationDto.limit ?? DEFAULT_PAGE_SIZE)
+      .limit(playersFilterDto.limit ?? DEFAULT_PAGE_SIZE)
       .exec();
     return playersFromDatabase;
   }
@@ -127,7 +126,21 @@ export class PlayersService {
         const data: IPlayersResponse = response.data;
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const players = response.data.data.map(({ team, ...rest }) => rest);
+        const players = response.data.data.map(({ team, country, ...rest }) => {
+          let countryValue = '';
+
+          if (country) {
+            const countryData = getByCountry(country);
+            countryValue = countryData?.code || country;
+          }
+
+          return {
+            ...rest,
+            country: countryValue,
+          };
+        });
+
+        console.log(players);
         allPlayers.push(...players);
 
         nextCursor = data.meta.next_cursor;
@@ -136,7 +149,7 @@ export class PlayersService {
         }
 
         if (nextCursor !== null) {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 500));
         }
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 429) {

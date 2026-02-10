@@ -6,40 +6,40 @@ export type PlayerDocument = HydratedDocument<Player>;
 @Schema()
 export class Player {
   @Prop({ required: false })
-  externalId: number;
+  externalId?: number;
 
   @Prop({ required: true })
-  first_name: string;
+  first_name!: string;
 
   @Prop({ required: true })
-  last_name: string;
+  last_name!: string;
 
   @Prop({ required: false })
-  position: string;
+  position?: string;
 
   @Prop({ required: false })
-  height: string;
+  height?: string;
 
   @Prop({ required: false })
-  weight: string;
+  weight?: string;
 
   @Prop({ required: false })
-  jersey_number: string;
+  jersey_number?: string;
 
   @Prop({ required: false })
-  college: string;
+  college?: string;
 
   @Prop({ required: false })
-  country: string;
+  country?: string;
 
   @Prop({ required: false })
-  draft_year: number;
+  draft_year?: number;
 
   @Prop({ required: false })
-  draft_round: number;
+  draft_round?: number;
 
   @Prop({ required: false })
-  draft_number: number;
+  draft_number?: number;
 }
 
 export const PlayerSchema = SchemaFactory.createForClass(Player);
