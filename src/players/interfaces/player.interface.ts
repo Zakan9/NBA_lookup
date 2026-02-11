@@ -1,4 +1,4 @@
-export interface Team {
+export interface ITeam {
   id: number;
   conference: string;
   division: string;
@@ -8,18 +8,30 @@ export interface Team {
   abbreviation: string;
 }
 
-export interface Player {
+export interface IPlayer {
   id: number;
+
   first_name: string;
+
   last_name: string;
-  position: string;
-  height: string;
-  weight: string;
+
+  position: string[];
+
+  height: number | null;
+
+  weight: number | null;
+
   jersey_number: string;
+
   college: string;
+
   country: string;
+
   draft_year: number;
+
   draft_round: number;
+
   draft_number: number;
-  team: Team;
+
+  team?: ITeam;
 }
