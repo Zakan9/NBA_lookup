@@ -1,10 +1,12 @@
 import {
+  ArrayUnique,
   IsDefined,
   IsEnum,
   IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
+import { PositionEnum } from '../enums/position.enum';
 
 export class CreatePlayerDto {
   @IsDefined()
@@ -16,15 +18,16 @@ export class CreatePlayerDto {
   last_name!: string;
 
   @IsOptional()
-  @IsEnum(['G', 'F', 'C'], { each: true })
-  position?: ('G' | 'F' | 'C')[];
+  @IsEnum(PositionEnum, { each: true })
+  @ArrayUnique()
+  position?: PositionEnum[];
 
   @IsOptional()
-  @IsString()
+  @IsNumber()
   height?: number;
 
   @IsOptional()
-  @IsString()
+  @IsNumber()
   weight?: number;
 
   @IsOptional()

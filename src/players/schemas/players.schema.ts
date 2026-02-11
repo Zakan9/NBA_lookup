@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { PositionEnum } from '../enums/position.enum';
 
 export type PlayerDocument = HydratedDocument<Player>;
 
@@ -14,8 +15,8 @@ export class Player {
   @Prop({ required: true })
   last_name!: string;
 
-  @Prop({ type: [String], required: false })
-  position?: ('G' | 'F' | 'C')[];
+  @Prop({ type: [String], required: false, enum: Object.values(PositionEnum) })
+  position?: PositionEnum[];
 
   @Prop({ required: false })
   height?: number;

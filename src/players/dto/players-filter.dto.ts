@@ -4,9 +4,11 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  ArrayUnique,
 } from 'class-validator';
 import { PaginationDto } from './pagination.dto';
 import { IsGreaterThan } from '../validators/is-greater-than.validator';
+import { PositionEnum } from '../enums/position.enum';
 
 export class PlayersFilterDto extends PaginationDto {
   @IsOptional()
@@ -22,8 +24,9 @@ export class PlayersFilterDto extends PaginationDto {
   country?: string;
 
   @IsOptional()
-  @IsEnum(['G', 'F', 'C'], { each: true })
-  position?: ('G' | 'F' | 'C')[];
+  @IsEnum(PositionEnum, { each: true })
+  @ArrayUnique()
+  position?: PositionEnum[];
 
   @IsOptional()
   @IsNumber()
