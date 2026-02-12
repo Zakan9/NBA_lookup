@@ -196,8 +196,6 @@ export class PlayersService {
             };
           },
         );
-
-        console.log(players);
         allPlayers.push(...players);
 
         nextCursor = data.meta.next_cursor;
