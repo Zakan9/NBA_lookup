@@ -9,7 +9,7 @@ import { UpdatePlayerDto } from './dto/update-player.dto';
 import { IPlayer } from './interfaces/player.interface';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { IPlayersResponse } from './interfaces/players-response.interface';
-import { DEFAULT_PAGE_SIZE } from 'src/utils/constants.utils';
+import { DEFAULT_PAGE_SIZE } from '../utils/constants.utils';
 import { PlayersFilterDto } from './dto/players-filter.dto';
 import { getByCountry } from 'countries-ts';
 
@@ -196,8 +196,6 @@ export class PlayersService {
             };
           },
         );
-
-        console.log(players);
         allPlayers.push(...players);
 
         nextCursor = data.meta.next_cursor;
