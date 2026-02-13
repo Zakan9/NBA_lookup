@@ -33,5 +33,5 @@ export interface IPlayer {
 
   draft_number: number;
 
-  team?: ITeam;
+  team: ITeam;
 }

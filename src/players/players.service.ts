@@ -7,7 +7,7 @@ import { Model, QueryFilter } from 'mongoose';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { IPlayer } from './interfaces/player.interface';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression, Timeout } from '@nestjs/schedule';
 import { IPlayersResponse } from './interfaces/players-response.interface';
 import { DEFAULT_PAGE_SIZE } from '../utils/constants.utils';
 import { PlayersFilterDto } from './dto/players-filter.dto';
@@ -60,6 +60,7 @@ export class PlayersService {
       draft_year: player.draft_year,
       draft_round: player.draft_round,
       draft_number: player.draft_number,
+      team: player.team,
     };
 
     await this.playerModel.updateOne(
@@ -148,8 +149,7 @@ export class PlayersService {
         const data: IPlayersResponse = response.data;
 
         const players = response.data.data.map(
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          ({ team, country, weight, height, position, ...rest }) => {
+          ({ country, weight, height, position, ...rest }) => {
             let countryValue = '';
             let tempPosition: string[] = [];
             let tempWeight: number | null = null;
@@ -196,6 +196,8 @@ export class PlayersService {
             };
           },
         );
+
+        console.log(players);
         allPlayers.push(...players);
 
         nextCursor = data.meta.next_cursor;
@@ -219,7 +221,8 @@ export class PlayersService {
     return allPlayers;
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  //@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  @Timeout(500)
   async upsertPlayersToDatabase(): Promise<void> {
     this.logger.log('Cron job starting (upsertPlayersToDatabase)');
     try {
