@@ -7,7 +7,7 @@ import { Model, QueryFilter } from 'mongoose';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { IPlayer } from './interfaces/player.interface';
-import { Cron, CronExpression, Timeout } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { IPlayersResponse } from './interfaces/players-response.interface';
 import { DEFAULT_PAGE_SIZE } from '../utils/constants.utils';
 import { PlayersFilterDto } from './dto/players-filter.dto';
@@ -41,9 +41,13 @@ export class PlayersService {
   }
 
   async updatePlayer(id: string, updatePlayerDto: UpdatePlayerDto) {
-    return this.playerModel.findOneAndUpdate({ _id: id }, updatePlayerDto, {
-      new: true,
-    });
+    return this.playerModel.findOneAndUpdate(
+      { _id: id, is_deleted: false },
+      updatePlayerDto,
+      {
+        new: true,
+      },
+    );
   }
 
   async upsertExternalPlayer(player: IPlayer): Promise<void> {
@@ -64,16 +68,26 @@ export class PlayersService {
     };
 
     await this.playerModel.updateOne(
-      { externalId: player.id },
+      { externalId: player.id, is_deleted: false },
       { $set: mappedPlayer },
       { upsert: true },
     );
   }
 
-  async getPlayersFromDatabase(
-    playersFilterDto: PlayersFilterDto,
-  ): Promise<Player[]> {
-    const query: QueryFilter<Player> = {};
+  async getPlayerById(id: string): Promise<Player | null> {
+    return this.playerModel.findOne({ _id: id, is_deleted: false }).exec();
+  }
+
+  async getPlayersFromDatabase(playersFilterDto: PlayersFilterDto): Promise<{
+    data: Player[];
+    meta: {
+      total_count: number;
+      total_pages: number;
+      current_page: number;
+      per_page: number;
+    };
+  }> {
+    const query: QueryFilter<Player> = { is_deleted: false };
 
     if (playersFilterDto.first_name) {
       query.first_name = { $regex: playersFilterDto.first_name, $options: 'i' };
@@ -119,15 +133,22 @@ export class PlayersService {
 
     const limit = playersFilterDto.limit ?? DEFAULT_PAGE_SIZE;
     const page = playersFilterDto.page ?? 1;
-
     const skip = (page - 1) * limit;
 
-    const playersFromDatabase = await this.playerModel
-      .find(query)
-      .skip(skip)
-      .limit(playersFilterDto.limit ?? DEFAULT_PAGE_SIZE)
-      .exec();
-    return playersFromDatabase;
+    const [players, total_count] = await Promise.all([
+      this.playerModel.find(query).skip(skip).limit(limit).exec(),
+      this.playerModel.countDocuments(query),
+    ]);
+
+    return {
+      data: players,
+      meta: {
+        total_count,
+        total_pages: Math.ceil(total_count / limit),
+        current_page: page,
+        per_page: limit,
+      },
+    };
   }
 
   async getPlayersFromApi(): Promise<IPlayer[]> {
@@ -221,8 +242,7 @@ export class PlayersService {
     return allPlayers;
   }
 
-  //@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  @Timeout(500)
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async upsertPlayersToDatabase(): Promise<void> {
     this.logger.log('Cron job starting (upsertPlayersToDatabase)');
     try {
