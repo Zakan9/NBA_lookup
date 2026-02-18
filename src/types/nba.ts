@@ -9,19 +9,20 @@ export interface Team {
 }
 
 export interface Player {
-  id: number;
+  _id: string;
+  externalId?: number;
   first_name: string;
   last_name: string;
-  position: string;
-  height: string;
-  weight: string;
-  jersey_number: string;
-  college: string;
-  country: string;
-  draft_year: number;
-  draft_round: number;
-  draft_number: number;
-  team: Team;
+  position: string[];
+  height: number | null;
+  weight: number | null;
+  jersey_number?: string;
+  college?: string;
+  country?: string;
+  draft_year?: number;
+  draft_round?: number;
+  draft_number?: number;
+  team?: Team;
 }
 
 export interface PlayersResponse {

@@ -28,6 +28,14 @@ const getPositionColor = (position: string) => {
       return '#2196F3';
     case 'C':
       return '#FF9800';
+    case 'G-F':
+      return '#af02ff';
+    case 'F-G':
+      return '#af02ff';
+    case 'F-C':
+      return '#f7e116';
+    case 'C-F':
+      return '#f7e116';
     default:
       return '#9E9E9E';
   }
@@ -43,7 +51,11 @@ const getPositionFullName = (position: string) => {
       return 'Center';
     case 'G-F':
       return 'Guard-Forward';
+    case 'F-G':
+      return 'Guard-Forward';
     case 'F-C':
+      return 'Forward-Center';
+    case 'C-F':
       return 'Forward-Center';
     default:
       return position;
@@ -64,7 +76,7 @@ const PlayerDetail: React.FC = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetchPlayer(Number(id));
+        const response = await fetchPlayer(id);
         setPlayer(response.data);
       } catch (err) {
         setError(err instanceof Error ? err : new Error('Failed to load player'));
@@ -106,7 +118,7 @@ const PlayerDetail: React.FC = () => {
         {/* Header */}
         <Box
           sx={{
-            background: `linear-gradient(135deg, ${getPositionColor(player.position)}33 0%, ${getPositionColor(player.position)}66 100%)`,
+            background: `linear-gradient(135deg, ${getPositionColor(player.position?.join('-') ?? '')}33 0%, ${getPositionColor(player.position?.join('-') ?? '')}66 100%)`,
             p: 4,
           }}
         >
@@ -137,9 +149,9 @@ const PlayerDetail: React.FC = () => {
               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                 <Chip
                   icon={<SportsBasketballIcon />}
-                  label={getPositionFullName(player.position)}
+                  label={getPositionFullName(player.position?.join('-') ?? '')}
                   sx={{
-                    backgroundColor: getPositionColor(player.position),
+                    backgroundColor: getPositionColor(player.position?.join('-') ?? ''),
                     color: 'white',
                     fontWeight: 'bold',
                     fontSize: '1rem',
@@ -147,7 +159,7 @@ const PlayerDetail: React.FC = () => {
                   }}
                 />
                 <Chip
-                  label={player.team.abbreviation}
+                  label={player.team?.abbreviation}
                   variant="outlined"
                   sx={{ fontWeight: 'bold', fontSize: '1rem', py: 2 }}
                 />
@@ -168,19 +180,19 @@ const PlayerDetail: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   Team
                 </Typography>
-                <Typography variant="h6">{player.team.full_name}</Typography>
+                <Typography variant="h6">{player.team?.full_name}</Typography>
               </Grid>
               <Grid size={{ xs: 6, sm: 3 }}>
                 <Typography variant="body2" color="text.secondary">
                   Conference
                 </Typography>
-                <Typography variant="h6">{player.team.conference}</Typography>
+                <Typography variant="h6">{player.team?.conference}</Typography>
               </Grid>
               <Grid size={{ xs: 6, sm: 3 }}>
                 <Typography variant="body2" color="text.secondary">
                   Division
                 </Typography>
-                <Typography variant="h6">{player.team.division}</Typography>
+                <Typography variant="h6">{player.team?.division}</Typography>
               </Grid>
             </Grid>
           </Paper>
@@ -198,7 +210,7 @@ const PlayerDetail: React.FC = () => {
                   Height
                 </Typography>
                 <Typography variant="h5" fontWeight="bold">
-                  {player.height}
+                  {player.height ? `${player.height} cm` : 'N/A'}
                 </Typography>
               </Paper>
             </Grid>
@@ -208,7 +220,7 @@ const PlayerDetail: React.FC = () => {
                   Weight
                 </Typography>
                 <Typography variant="h5" fontWeight="bold">
-                  {player.weight} lbs
+                  {player.weight ? `${player.weight} kg` : 'N/A'}
                 </Typography>
               </Paper>
             </Grid>
@@ -218,7 +230,7 @@ const PlayerDetail: React.FC = () => {
                   Position
                 </Typography>
                 <Typography variant="h5" fontWeight="bold">
-                  {player.position}
+                  {player.position?.join('-') ?? ''}
                 </Typography>
               </Paper>
             </Grid>
@@ -273,10 +285,7 @@ const PlayerDetail: React.FC = () => {
           </Typography>
           <Grid container spacing={3}>
             <Grid size={{ xs: 4 }}>
-              <Paper
-                variant="outlined"
-                sx={{ p: 2, textAlign: 'center', backgroundColor: 'action.hover' }}
-              >
+              <Paper variant="outlined" sx={{ p: 2, textAlign: 'center', backgroundColor: 'action.hover' }}>
                 <Typography variant="body2" color="text.secondary">
                   Year
                 </Typography>
@@ -286,10 +295,7 @@ const PlayerDetail: React.FC = () => {
               </Paper>
             </Grid>
             <Grid size={{ xs: 4 }}>
-              <Paper
-                variant="outlined"
-                sx={{ p: 2, textAlign: 'center', backgroundColor: 'action.hover' }}
-              >
+              <Paper variant="outlined" sx={{ p: 2, textAlign: 'center', backgroundColor: 'action.hover' }}>
                 <Typography variant="body2" color="text.secondary">
                   Round
                 </Typography>
@@ -299,10 +305,7 @@ const PlayerDetail: React.FC = () => {
               </Paper>
             </Grid>
             <Grid size={{ xs: 4 }}>
-              <Paper
-                variant="outlined"
-                sx={{ p: 2, textAlign: 'center', backgroundColor: 'action.hover' }}
-              >
+              <Paper variant="outlined" sx={{ p: 2, textAlign: 'center', backgroundColor: 'action.hover' }}>
                 <Typography variant="body2" color="text.secondary">
                   Pick
                 </Typography>

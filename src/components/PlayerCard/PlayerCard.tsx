@@ -16,6 +16,14 @@ const getPositionColor = (position: string) => {
       return '#2196F3';
     case 'C':
       return '#FF9800';
+    case 'G-F':
+      return '#af02ff';
+    case 'F-G':
+      return '#af02ff';
+    case 'F-C':
+      return '#f7e116';
+    case 'C-F':
+      return '#f7e116';
     default:
       return '#9E9E9E';
   }
@@ -31,7 +39,11 @@ const getPositionFullName = (position: string) => {
       return 'Center';
     case 'G-F':
       return 'Guard-Forward';
+    case 'F-G':
+      return 'Guard-Forward';
     case 'F-C':
+      return 'Forward-Center';
+    case 'C-F':
       return 'Forward-Center';
     default:
       return position;
@@ -42,7 +54,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/player/${player.id}`);
+    navigate(`/player/${player._id}`);
   };
 
   return (
@@ -61,7 +73,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
       <CardActionArea onClick={handleClick} sx={{ flexGrow: 1 }}>
         <Box
           sx={{
-            background: `linear-gradient(135deg, ${getPositionColor(player.position)}22 0%, ${getPositionColor(player.position)}44 100%)`,
+            background: `linear-gradient(135deg, ${getPositionColor(player.position?.join('-') ?? '')}22 0%, ${getPositionColor(player.position?.join('-') ?? '')}44 100%)`,
             p: 3,
             display: 'flex',
             alignItems: 'center',
@@ -86,7 +98,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
             </Typography>
           </Box>
           <Chip
-            label={player.team.abbreviation}
+            label={player.team?.abbreviation}
             size="small"
             sx={{
               position: 'absolute',
@@ -104,10 +116,10 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
           <Stack direction="row" spacing={1} mb={2}>
             <Chip
               icon={<SportsBasketballIcon sx={{ fontSize: 16 }} />}
-              label={getPositionFullName(player.position)}
+              label={getPositionFullName(player.position?.join('-') ?? '')}
               size="small"
               sx={{
-                backgroundColor: getPositionColor(player.position),
+                backgroundColor: getPositionColor(player.position?.join('-') ?? ''),
                 color: 'white',
                 fontWeight: 500,
               }}
@@ -115,7 +127,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
           </Stack>
 
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            {player.team.full_name}
+            {player.team?.full_name}
           </Typography>
 
           <Stack direction="row" spacing={2} mt={2}>
