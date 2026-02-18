@@ -3,7 +3,7 @@
 A full-stack web application for browsing information on all-time NBA players. Updates every 24 hours.
 
 **Frontend** - React, TypeScript, Vite  
-**Backend** - NestJS, TypeScript
+**Backend** - NestJS, TypeScript  
 **Database** - MongoDB
 
 ## Getting Started
