@@ -12,6 +12,8 @@ import { IPlayersResponse } from './interfaces/players-response.interface';
 import { DEFAULT_PAGE_SIZE } from '../utils/constants.utils';
 import { PlayersFilterDto } from './dto/players-filter.dto';
 import { getByCountry } from 'countries-ts';
+import { convertLbsToKg } from './utility/convert-lbs-to-kg.utility';
+import { convertFeetAndInchesToCm } from './utility/convert-feet-and-inches-to-cm.utility';
 
 @Injectable()
 export class PlayersService {
@@ -191,21 +193,11 @@ export class PlayersService {
             }
 
             if (typeof weight === 'string') {
-              const parsed = parseInt(weight, 10);
-              if (!Number.isNaN(parsed)) {
-                // Convert to kg
-                tempWeight = Math.round(parsed * 0.45);
-              }
+              tempWeight = convertLbsToKg(weight);
             }
 
             if (typeof height === 'string') {
-              const parts = height.split('-');
-              if (!Number.isNaN(parts[0]) && !Number.isNaN(parts[1])) {
-                // Convert to cm
-                tempHeight = Math.round(
-                  parseInt(parts[0]) * 30.48 + parseInt(parts[1]) * 2.54,
-                );
-              }
+              tempHeight = convertFeetAndInchesToCm(height);
             }
 
             return {
