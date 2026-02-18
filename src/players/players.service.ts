@@ -218,7 +218,6 @@ export class PlayersService {
           },
         );
 
-        console.log(players);
         allPlayers.push(...players);
 
         nextCursor = data.meta.next_cursor;
@@ -231,7 +230,6 @@ export class PlayersService {
         }
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 429) {
-          console.log(`Rate limited. Waiting 60 seconds...`);
           await new Promise((resolve) => setTimeout(resolve, 60000));
           continue;
         }
