@@ -56,51 +56,78 @@ describe('Players Cron Job', () => {
     const mockPlayersPage1 = [
       {
         id: 123,
-        firstName: 'Nojus',
-        lastName: 'Savukynas',
+        first_name: 'Nojus',
+        last_name: 'Savukynas',
         position: 'G-F',
         height: '6-0',
         weight: '180',
-        jerseyNumber: '21',
+        jersey_number: '21',
         college: 'Alytus',
         country: 'LT',
-        draftYear: 2024,
-        draftRound: 1,
-        draftNumber: 1,
+        draft_year: 2024,
+        draft_round: 1,
+        draft_number: 1,
+        team: {
+          id: 14,
+          conference: 'West',
+          division: 'Pacific',
+          city: 'Los Angeles',
+          name: 'Lakers',
+          full_name: 'Los Angeles Lakers',
+          abbreviation: 'LAL',
+        },
       },
     ];
 
     const mockPlayersPage2 = [
       {
         id: 456,
-        firstName: 'Giannis',
-        lastName: 'Antetokounmpo',
+        first_name: 'Giannis',
+        last_name: 'Antetokounmpo',
         position: 'F',
         height: '6-11',
         weight: '243',
-        jerseyNumber: '34',
+        jersey_number: '34',
         college: 'Athens',
         country: 'Greece',
-        draftYear: 2013,
-        draftRound: 1,
-        draftNumber: 15,
+        draft_year: 2013,
+        draft_round: 1,
+        draft_number: 15,
+        team: {
+          id: 17,
+          conference: 'East',
+          division: 'Central',
+          city: 'Milwaukee',
+          name: 'Bucks',
+          full_name: 'Milwaukee Bucks',
+          abbreviation: 'MIL',
+        },
       },
     ];
 
     const mockPlayersPage3 = [
       {
         id: 789,
-        firstName: 'Stephen',
-        lastName: 'Curry',
+        first_name: 'Stephen',
+        last_name: 'Curry',
         position: 'G',
         height: '6-2',
         weight: '185',
-        jerseyNumber: '30',
+        jersey_number: '30',
         college: 'Davidson',
         country: 'USA',
-        draftYear: 2009,
-        draftRound: 1,
-        draftNumber: 7,
+        draft_year: 2009,
+        draft_round: 1,
+        draft_number: 7,
+        team: {
+          id: 10,
+          conference: 'West',
+          division: 'Pacific',
+          city: 'Golden State',
+          name: 'Warriors',
+          full_name: 'Golden State Warriors',
+          abbreviation: 'GSW',
+        },
       },
     ];
 
@@ -110,21 +137,21 @@ describe('Players Cron Job', () => {
     mockAxiosGet.mockResolvedValueOnce({
       data: {
         data: mockPlayersPage1,
-        meta: { nextCursor: 2 },
+        meta: { next_cursor: 2 },
       },
     } as Partial<AxiosResponse>);
 
     mockAxiosGet.mockResolvedValueOnce({
       data: {
         data: mockPlayersPage2,
-        meta: { nextCursor: 3 },
+        meta: { next_cursor: 3 },
       },
     } as Partial<AxiosResponse>);
 
     mockAxiosGet.mockResolvedValueOnce({
       data: {
         data: mockPlayersPage3,
-        meta: { nextCursor: null },
+        meta: { next_cursor: null },
       },
     } as Partial<AxiosResponse>);
 
