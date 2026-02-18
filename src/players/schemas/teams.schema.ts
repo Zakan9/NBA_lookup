@@ -18,7 +18,7 @@ export class Team {
   name!: string;
 
   @Prop({ required: true })
-  full_name!: string;
+  fullName!: string;
 
   @Prop({ required: true })
   abbreviation!: string;

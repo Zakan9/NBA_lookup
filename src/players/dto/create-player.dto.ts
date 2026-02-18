@@ -14,11 +14,11 @@ import { TeamDto } from './team.dto';
 export class CreatePlayerDto {
   @IsDefined()
   @IsString()
-  first_name!: string;
+  firstName!: string;
 
   @IsDefined()
   @IsString()
-  last_name!: string;
+  lastName!: string;
 
   @IsOptional()
   @IsEnum(PositionEnum, { each: true })
@@ -35,7 +35,7 @@ export class CreatePlayerDto {
 
   @IsOptional()
   @IsString()
-  jersey_number?: string;
+  jerseyNumber?: string;
 
   @IsOptional()
   @IsString()
@@ -47,15 +47,15 @@ export class CreatePlayerDto {
 
   @IsOptional()
   @IsNumber()
-  draft_year?: number;
+  draftYear?: number;
 
   @IsOptional()
   @IsNumber()
-  draft_round?: number;
+  draftRound?: number;
 
   @IsOptional()
   @IsNumber()
-  draft_number?: number;
+  draftNumber?: number;
 
   @IsOptional()
   @ValidateNested()

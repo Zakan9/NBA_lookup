@@ -37,24 +37,24 @@ describe('Players Endpoints (e2e)', () => {
 
   it('POST /players', () => {
     const playerInfo = {
-      first_name: 'Nojus',
-      last_name: 'Savukynas',
+      firstName: 'Nojus',
+      lastName: 'Savukynas',
       position: ['G', 'F'],
       height: 177,
       weight: 65,
-      jersey_number: '21',
+      jerseyNumber: '21',
       college: 'Alytus',
       country: 'LT',
-      draft_year: 2024,
-      draft_round: 1,
-      draft_number: 1,
+      draftYear: 2024,
+      draftRound: 1,
+      draftNumber: 1,
       team: {
         id: 21,
         conference: 'West',
         division: 'Northwest',
         city: 'Oklahoma City',
         name: 'Thunder',
-        full_name: 'Oklahoma City Thunder',
+        fullName: 'Oklahoma City Thunder',
         abbreviation: 'OKC',
       },
     };
@@ -65,40 +65,40 @@ describe('Players Endpoints (e2e)', () => {
       .expect(201)
       .expect((res) => {
         const body = res.body as IPlayer;
-        expect(body.first_name).toEqual('Nojus');
-        expect(body.last_name).toEqual('Savukynas');
+        expect(body.firstName).toEqual('Nojus');
+        expect(body.lastName).toEqual('Savukynas');
         expect(body.position).toEqual(['G', 'F']);
         expect(body.height).toEqual(177);
         expect(body.weight).toEqual(65);
-        expect(body.jersey_number).toEqual('21');
+        expect(body.jerseyNumber).toEqual('21');
         expect(body.college).toEqual('Alytus');
         expect(body.country).toEqual('LT');
-        expect(body.draft_year).toEqual(2024);
-        expect(body.draft_round).toEqual(1);
-        expect(body.draft_number).toEqual(1);
+        expect(body.draftYear).toEqual(2024);
+        expect(body.draftRound).toEqual(1);
+        expect(body.draftNumber).toEqual(1);
       });
   });
 
   it('DELETE /players/:id', async () => {
     const playerInfo = {
-      first_name: 'Kasparas',
-      last_name: 'Jonaitis',
+      firstName: 'Kasparas',
+      lastName: 'Jonaitis',
       position: ['F', 'C'],
       height: 210,
       weight: 130,
-      jersey_number: '11',
+      jerseyNumber: '11',
       college: 'Kaunas Zalgiris',
       country: 'LT',
-      draft_year: 2022,
-      draft_round: 2,
-      draft_number: 30,
+      draftYear: 2022,
+      draftRound: 2,
+      draftNumber: 30,
       team: {
         id: 21,
         conference: 'West',
         division: 'Northwest',
         city: 'Oklahoma City',
         name: 'Thunder',
-        full_name: 'Oklahoma City Thunder',
+        fullName: 'Oklahoma City Thunder',
         abbreviation: 'OKC',
       },
     };

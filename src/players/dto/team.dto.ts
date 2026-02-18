@@ -24,7 +24,7 @@ export class TeamDto {
 
   @IsDefined()
   @IsString()
-  full_name!: string;
+  fullName!: string;
 
   @IsDefined()
   @IsString()

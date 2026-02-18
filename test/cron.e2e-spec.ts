@@ -56,51 +56,51 @@ describe('Players Cron Job', () => {
     const mockPlayersPage1 = [
       {
         id: 123,
-        first_name: 'Nojus',
-        last_name: 'Savukynas',
+        firstName: 'Nojus',
+        lastName: 'Savukynas',
         position: 'G-F',
         height: '6-0',
         weight: '180',
-        jersey_number: '21',
+        jerseyNumber: '21',
         college: 'Alytus',
         country: 'LT',
-        draft_year: 2024,
-        draft_round: 1,
-        draft_number: 1,
+        draftYear: 2024,
+        draftRound: 1,
+        draftNumber: 1,
       },
     ];
 
     const mockPlayersPage2 = [
       {
         id: 456,
-        first_name: 'Giannis',
-        last_name: 'Antetokounmpo',
+        firstName: 'Giannis',
+        lastName: 'Antetokounmpo',
         position: 'F',
         height: '6-11',
         weight: '243',
-        jersey_number: '34',
+        jerseyNumber: '34',
         college: 'Athens',
         country: 'Greece',
-        draft_year: 2013,
-        draft_round: 1,
-        draft_number: 15,
+        draftYear: 2013,
+        draftRound: 1,
+        draftNumber: 15,
       },
     ];
 
     const mockPlayersPage3 = [
       {
         id: 789,
-        first_name: 'Stephen',
-        last_name: 'Curry',
+        firstName: 'Stephen',
+        lastName: 'Curry',
         position: 'G',
         height: '6-2',
         weight: '185',
-        jersey_number: '30',
+        jerseyNumber: '30',
         college: 'Davidson',
         country: 'USA',
-        draft_year: 2009,
-        draft_round: 1,
-        draft_number: 7,
+        draftYear: 2009,
+        draftRound: 1,
+        draftNumber: 7,
       },
     ];
 
@@ -110,21 +110,21 @@ describe('Players Cron Job', () => {
     mockAxiosGet.mockResolvedValueOnce({
       data: {
         data: mockPlayersPage1,
-        meta: { next_cursor: 2 },
+        meta: { nextCursor: 2 },
       },
     } as Partial<AxiosResponse>);
 
     mockAxiosGet.mockResolvedValueOnce({
       data: {
         data: mockPlayersPage2,
-        meta: { next_cursor: 3 },
+        meta: { nextCursor: 3 },
       },
     } as Partial<AxiosResponse>);
 
     mockAxiosGet.mockResolvedValueOnce({
       data: {
         data: mockPlayersPage3,
-        meta: { next_cursor: null },
+        meta: { nextCursor: null },
       },
     } as Partial<AxiosResponse>);
 

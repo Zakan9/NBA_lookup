@@ -13,11 +13,11 @@ import { PositionEnum } from '../enums/position.enum';
 export class PlayersFilterDto extends PaginationDto {
   @IsOptional()
   @IsString()
-  first_name?: string;
+  firstName?: string;
 
   @IsOptional()
   @IsString()
-  last_name?: string;
+  lastName?: string;
 
   @IsOptional()
   @IsString()
@@ -31,31 +31,31 @@ export class PlayersFilterDto extends PaginationDto {
   @IsOptional()
   @IsNumber()
   @IsPositive()
-  draft_number?: number;
+  draftNumber?: number;
 
   @IsOptional()
   @IsNumber()
   @IsPositive()
-  min_height?: number;
+  minHeight?: number;
 
   @IsOptional()
   @IsNumber()
   @IsPositive()
-  @IsGreaterThan('min_height', {
-    message: 'max_height must be greater than min_height',
+  @IsGreaterThan('minHeight', {
+    message: 'maxHeight must be greater than minHeight',
   })
-  max_height?: number;
+  maxHeight?: number;
 
   @IsOptional()
   @IsNumber()
   @IsPositive()
-  min_weight?: number;
+  minWeight?: number;
 
   @IsOptional()
   @IsNumber()
   @IsPositive()
-  @IsGreaterThan('min_weight', {
-    message: 'max_weight must be greater than min_weight',
+  @IsGreaterThan('minWeight', {
+    message: 'maxWeight must be greater than minWeight',
   })
-  max_weight?: number;
+  maxWeight?: number;
 }

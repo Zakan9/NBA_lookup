@@ -11,10 +11,10 @@ export class Player {
   externalId?: number;
 
   @Prop({ required: true })
-  first_name!: string;
+  firstName!: string;
 
   @Prop({ required: true })
-  last_name!: string;
+  lastName!: string;
 
   @Prop({ type: [String], required: false, enum: Object.values(PositionEnum) })
   position?: PositionEnum[];
@@ -26,7 +26,7 @@ export class Player {
   weight?: number;
 
   @Prop({ required: false })
-  jersey_number?: string;
+  jerseyNumber?: string;
 
   @Prop({ required: false })
   college?: string;
@@ -35,19 +35,19 @@ export class Player {
   country?: string;
 
   @Prop({ required: false })
-  draft_year?: number;
+  draftYear?: number;
 
   @Prop({ required: false })
-  draft_round?: number;
+  draftRound?: number;
 
   @Prop({ required: false })
-  draft_number?: number;
+  draftNumber?: number;
 
   @Prop({ type: TeamSchema, required: false })
   team?: Team;
 
   @Prop({ default: false })
-  is_deleted?: boolean;
+  isDeleted?: boolean;
 }
 
 export const PlayerSchema = SchemaFactory.createForClass(Player);

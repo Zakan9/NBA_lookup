@@ -1,37 +1,17 @@
-export interface ITeam {
-  id: number;
-  conference: string;
-  division: string;
-  city: string;
-  name: string;
-  full_name: string;
-  abbreviation: string;
-}
+import { ITeam } from './team.interface';
 
 export interface IPlayer {
-  id: number;
-
-  first_name: string;
-
-  last_name: string;
-
+  externalId: number;
+  firstName: string;
+  lastName: string;
   position: string[];
-
   height: number | null;
-
   weight: number | null;
-
-  jersey_number: string;
-
+  jerseyNumber: string;
   college: string;
-
   country: string;
-
-  draft_year: number;
-
-  draft_round: number;
-
-  draft_number: number;
-
+  draftYear: number;
+  draftRound: number;
+  draftNumber: number;
   team: ITeam;
 }

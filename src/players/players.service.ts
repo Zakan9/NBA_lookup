@@ -44,7 +44,7 @@ export class PlayersService {
 
   async updatePlayer(id: string, updatePlayerDto: UpdatePlayerDto) {
     return this.playerModel.findOneAndUpdate(
-      { _id: id, is_deleted: false },
+      { _id: id, isDeleted: false },
       updatePlayerDto,
       {
         new: true,
@@ -54,49 +54,49 @@ export class PlayersService {
 
   async upsertExternalPlayer(player: IPlayer): Promise<void> {
     const mappedPlayer = {
-      externalId: player.id,
-      first_name: player.first_name,
-      last_name: player.last_name,
+      externalId: player.externalId,
+      firstName: player.firstName,
+      lastName: player.lastName,
       position: player.position,
       height: player.height,
       weight: player.weight,
-      jersey_number: player.jersey_number,
+      jerseyNumber: player.jerseyNumber,
       college: player.college,
       country: player.country,
-      draft_year: player.draft_year,
-      draft_round: player.draft_round,
-      draft_number: player.draft_number,
+      draftYear: player.draftYear,
+      draftRound: player.draftRound,
+      draftNumber: player.draftNumber,
       team: player.team,
     };
 
     await this.playerModel.updateOne(
-      { externalId: player.id, is_deleted: false },
+      { externalId: player.externalId, isDeleted: false },
       { $set: mappedPlayer },
       { upsert: true },
     );
   }
 
   async getPlayerById(id: string): Promise<Player | null> {
-    return this.playerModel.findOne({ _id: id, is_deleted: false }).exec();
+    return this.playerModel.findOne({ _id: id, isDeleted: false }).exec();
   }
 
   async getPlayersFromDatabase(playersFilterDto: PlayersFilterDto): Promise<{
     data: Player[];
     meta: {
-      total_count: number;
-      total_pages: number;
-      current_page: number;
-      per_page: number;
+      totalCount: number;
+      totalPages: number;
+      currentPage: number;
+      perPage: number;
     };
   }> {
-    const query: QueryFilter<Player> = { is_deleted: false };
+    const query: QueryFilter<Player> = { isDeleted: false };
 
-    if (playersFilterDto.first_name) {
-      query.first_name = { $regex: playersFilterDto.first_name, $options: 'i' };
+    if (playersFilterDto.firstName) {
+      query.firstName = { $regex: playersFilterDto.firstName, $options: 'i' };
     }
 
-    if (playersFilterDto.last_name) {
-      query.last_name = { $regex: playersFilterDto.last_name, $options: 'i' };
+    if (playersFilterDto.lastName) {
+      query.lastName = { $regex: playersFilterDto.lastName, $options: 'i' };
     }
 
     if (playersFilterDto.country) {
@@ -107,37 +107,37 @@ export class PlayersService {
       query.position = playersFilterDto.position;
     }
 
-    if (playersFilterDto.draft_number !== undefined) {
-      query.draft_number = playersFilterDto.draft_number;
+    if (playersFilterDto.draftNumber !== undefined) {
+      query.draftNumber = playersFilterDto.draftNumber;
     }
 
     if (
-      playersFilterDto.min_height !== undefined ||
-      playersFilterDto.max_height !== undefined
+      playersFilterDto.minHeight !== undefined ||
+      playersFilterDto.maxHeight !== undefined
     ) {
       query.height = {};
-      if (playersFilterDto.min_height !== undefined)
-        query.height.$gte = playersFilterDto.min_height;
-      if (playersFilterDto.max_height !== undefined)
-        query.height.$lte = playersFilterDto.max_height;
+      if (playersFilterDto.minHeight !== undefined)
+        query.height.$gte = playersFilterDto.minHeight;
+      if (playersFilterDto.maxHeight !== undefined)
+        query.height.$lte = playersFilterDto.maxHeight;
     }
 
     if (
-      playersFilterDto.min_weight !== undefined ||
-      playersFilterDto.max_weight !== undefined
+      playersFilterDto.minWeight !== undefined ||
+      playersFilterDto.maxWeight !== undefined
     ) {
       query.weight = {};
-      if (playersFilterDto.min_weight !== undefined)
-        query.weight.$gte = playersFilterDto.min_weight;
-      if (playersFilterDto.max_weight !== undefined)
-        query.weight.$lte = playersFilterDto.max_weight;
+      if (playersFilterDto.minWeight !== undefined)
+        query.weight.$gte = playersFilterDto.minWeight;
+      if (playersFilterDto.maxWeight !== undefined)
+        query.weight.$lte = playersFilterDto.maxWeight;
     }
 
     const limit = playersFilterDto.limit ?? DEFAULT_PAGE_SIZE;
     const page = playersFilterDto.page ?? 1;
     const skip = (page - 1) * limit;
 
-    const [players, total_count] = await Promise.all([
+    const [players, totalCount] = await Promise.all([
       this.playerModel.find(query).skip(skip).limit(limit).exec(),
       this.playerModel.countDocuments(query),
     ]);
@@ -145,10 +145,10 @@ export class PlayersService {
     return {
       data: players,
       meta: {
-        total_count,
-        total_pages: Math.ceil(total_count / limit),
-        current_page: page,
-        per_page: limit,
+        totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        perPage: limit,
       },
     };
   }
@@ -172,7 +172,21 @@ export class PlayersService {
         const data: IPlayersResponse = response.data;
 
         const players = response.data.data.map(
-          ({ country, weight, height, position, ...rest }) => {
+          ({
+            id,
+            first_name,
+            last_name,
+            position,
+            height,
+            weight,
+            jersey_number,
+            college,
+            country,
+            draft_year,
+            draft_round,
+            draft_number,
+            team,
+          }) => {
             let countryValue = '';
             let tempPosition: string[] = [];
             let tempWeight: number | null = null;
@@ -201,15 +215,30 @@ export class PlayersService {
             }
 
             return {
-              ...rest,
-              country: countryValue,
-              weight: tempWeight,
-              height: tempHeight,
+              externalId: id,
+              firstName: first_name,
+              lastName: last_name,
               position: tempPosition,
+              height: tempHeight,
+              weight: tempWeight,
+              jerseyNumber: jersey_number,
+              college: college,
+              country: countryValue,
+              draftYear: draft_year,
+              draftRound: draft_round,
+              draftNumber: draft_number,
+              team: {
+                id: team.id,
+                conference: team.conference,
+                division: team.division,
+                city: team.city,
+                name: team.name,
+                fullName: team.full_name,
+                abbreviation: team.abbreviation,
+              },
             };
           },
         );
-
         allPlayers.push(...players);
 
         nextCursor = data.meta.next_cursor;
