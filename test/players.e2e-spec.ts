@@ -48,6 +48,15 @@ describe('Players Endpoints (e2e)', () => {
       draft_year: 2024,
       draft_round: 1,
       draft_number: 1,
+      team: {
+        id: 21,
+        conference: 'West',
+        division: 'Northwest',
+        city: 'Oklahoma City',
+        name: 'Thunder',
+        full_name: 'Oklahoma City Thunder',
+        abbreviation: 'OKC',
+      },
     };
 
     return request(app.getHttpServer())
@@ -83,6 +92,15 @@ describe('Players Endpoints (e2e)', () => {
       draft_year: 2022,
       draft_round: 2,
       draft_number: 30,
+      team: {
+        id: 21,
+        conference: 'West',
+        division: 'Northwest',
+        city: 'Oklahoma City',
+        name: 'Thunder',
+        full_name: 'Oklahoma City Thunder',
+        abbreviation: 'OKC',
+      },
     };
 
     const createResponse = await request(app.getHttpServer())

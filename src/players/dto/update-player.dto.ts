@@ -4,8 +4,11 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
 import { PositionEnum } from '../enums/position.enum';
+import { Type } from 'class-transformer';
+import { TeamDto } from './team.dto';
 
 export class UpdatePlayerDto {
   @IsOptional()
@@ -52,4 +55,9 @@ export class UpdatePlayerDto {
   @IsOptional()
   @IsNumber()
   draft_number?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => TeamDto)
+  team?: TeamDto;
 }

@@ -41,9 +41,13 @@ export class PlayersService {
   }
 
   async updatePlayer(id: string, updatePlayerDto: UpdatePlayerDto) {
-    return this.playerModel.findOneAndUpdate({ _id: id }, updatePlayerDto, {
-      new: true,
-    });
+    return this.playerModel.findOneAndUpdate(
+      { _id: id, is_deleted: false },
+      updatePlayerDto,
+      {
+        new: true,
+      },
+    );
   }
 
   async upsertExternalPlayer(player: IPlayer): Promise<void> {
@@ -60,19 +64,30 @@ export class PlayersService {
       draft_year: player.draft_year,
       draft_round: player.draft_round,
       draft_number: player.draft_number,
+      team: player.team,
     };
 
     await this.playerModel.updateOne(
-      { externalId: player.id },
+      { externalId: player.id, is_deleted: false },
       { $set: mappedPlayer },
       { upsert: true },
     );
   }
 
-  async getPlayersFromDatabase(
-    playersFilterDto: PlayersFilterDto,
-  ): Promise<Player[]> {
-    const query: QueryFilter<Player> = {};
+  async getPlayerById(id: string): Promise<Player | null> {
+    return this.playerModel.findOne({ _id: id, is_deleted: false }).exec();
+  }
+
+  async getPlayersFromDatabase(playersFilterDto: PlayersFilterDto): Promise<{
+    data: Player[];
+    meta: {
+      total_count: number;
+      total_pages: number;
+      current_page: number;
+      per_page: number;
+    };
+  }> {
+    const query: QueryFilter<Player> = { is_deleted: false };
 
     if (playersFilterDto.first_name) {
       query.first_name = { $regex: playersFilterDto.first_name, $options: 'i' };
@@ -118,15 +133,22 @@ export class PlayersService {
 
     const limit = playersFilterDto.limit ?? DEFAULT_PAGE_SIZE;
     const page = playersFilterDto.page ?? 1;
-
     const skip = (page - 1) * limit;
 
-    const playersFromDatabase = await this.playerModel
-      .find(query)
-      .skip(skip)
-      .limit(playersFilterDto.limit ?? DEFAULT_PAGE_SIZE)
-      .exec();
-    return playersFromDatabase;
+    const [players, total_count] = await Promise.all([
+      this.playerModel.find(query).skip(skip).limit(limit).exec(),
+      this.playerModel.countDocuments(query),
+    ]);
+
+    return {
+      data: players,
+      meta: {
+        total_count,
+        total_pages: Math.ceil(total_count / limit),
+        current_page: page,
+        per_page: limit,
+      },
+    };
   }
 
   async getPlayersFromApi(): Promise<IPlayer[]> {
@@ -148,8 +170,7 @@ export class PlayersService {
         const data: IPlayersResponse = response.data;
 
         const players = response.data.data.map(
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          ({ team, country, weight, height, position, ...rest }) => {
+          ({ country, weight, height, position, ...rest }) => {
             let countryValue = '';
             let tempPosition: string[] = [];
             let tempWeight: number | null = null;
@@ -196,6 +217,8 @@ export class PlayersService {
             };
           },
         );
+
+        console.log(players);
         allPlayers.push(...players);
 
         nextCursor = data.meta.next_cursor;

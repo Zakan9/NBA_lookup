@@ -23,6 +23,15 @@ export class PlayersController {
     return this.playersService.getPlayersFromDatabase(playersFilterDto);
   }
 
+  @Get('/:id')
+  async getPlayerById(@Param('id') id: string) {
+    const player = await this.playersService.getPlayerById(id);
+    if (!player) {
+      throw new NotFoundException('Player not found');
+    }
+    return { data: player };
+  }
+
   @Post()
   async createPlayer(@Body() createPlayerDto: CreatePlayerDto) {
     return this.playersService.createPlayer(createPlayerDto);

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { PositionEnum } from '../enums/position.enum';
+import { Team, TeamSchema } from './teams.schema';
 
 export type PlayerDocument = HydratedDocument<Player>;
 
@@ -41,6 +42,12 @@ export class Player {
 
   @Prop({ required: false })
   draft_number?: number;
+
+  @Prop({ type: TeamSchema, required: false })
+  team?: Team;
+
+  @Prop({ default: false })
+  is_deleted?: boolean;
 }
 
 export const PlayerSchema = SchemaFactory.createForClass(Player);
